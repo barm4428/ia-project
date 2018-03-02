@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.io.*;
 
 /**
@@ -27,7 +28,11 @@ public class ShowTester {
 
     private static JMenuBar menuBar() {
         JMenu file = new JMenu("File");
-        file.add(new JMenuItem("Quit"));
+
+        JMenuItem quit = new JMenuItem("Quit");
+        quit.addActionListener((ActionEvent event) -> {System.exit(0);});
+        file.add(quit);
+
         file.add(new JMenuItem("Save Show"));
         file.add(new JMenuItem("Save Venue"));
         file.add(new JMenuItem("Load Show"));
