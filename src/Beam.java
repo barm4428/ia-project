@@ -36,9 +36,10 @@ public class Beam implements Serializable {
     }
 
     public void paintComponent(Graphics graphics, int x, int y, int width, int height) {
-        graphics.drawLine(x+5, y, width-25, y);
+        graphics.drawString("Beam " + id, x+5, y+5);
+        graphics.drawLine(x+50, y, width-25, y);
         for (Dimmer d:dimmers) {
-            int pos = (int) Math.ceil(x + (d.getBeamPos()/length*width));
+            int pos = (int) Math.ceil(x + 50 + (d.getBeamPos()/length*(width-75)));
             d.paintComponent(graphics, pos, y-2, width, height);
         }
         for (Instrument i: instruments) {

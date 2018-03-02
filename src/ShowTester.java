@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 
@@ -10,17 +9,10 @@ import java.io.*;
 public class ShowTester {
 
     private static JFrame frame;
+    private static Show currentShow;
 
     public static void main(String[] args) {
-        /*String test1= JOptionPane.showInputDialog("Please input mark for test 1: ");
-        System.out.println(test1);*/
-        /*JFileChooser chooser = new JFileChooser();
-        if(chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = chooser.getSelectedFile();
-        }*/
-
-        Show s = getShow();
-        setFrame(s);
+        setFrame(new Show());
     }
 
     private static void setFrame(Show s) {
@@ -30,9 +22,55 @@ public class ShowTester {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.setJMenuBar(menuBar(s));
-        frame.add(new ShowComponent(s));
+        if (s.getBeams().size()>0) {
+            frame.add(new ShowComponent(s));
+        } else {
+            JPanel panel = new JPanel();
+            JButton loadFile = new JButton("Load show from File");
+            loadFile.addActionListener((ActionEvent event) -> {loadShow();});
+            panel.add(loadFile);
+            JButton addBeamButton = new JButton("Create new show");
+            addBeamButton.addActionListener((ActionEvent event) -> {addBeam();});
+            panel.add(addBeamButton);
 
+            frame.add(panel);
+        }
+
+        currentShow = s;
         frame.setVisible(true);
+    }
+
+    private static void addBeam() {
+        JComboBox<Integer> idField = new JComboBox<>();
+        for (int i=0; i<=currentShow.getBeams().size(); i++) {
+            idField.addItem(i+1);
+        }
+
+        JTextField lengthField = new JTextField(5);
+
+        JPanel myPanel = new JPanel();
+        myPanel.add(new JLabel("ID#:"));
+        myPanel.add(idField);
+        myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+        myPanel.add(new JLabel("Length:"));
+        myPanel.add(lengthField);
+        myPanel.add(new JLabel("ft"));
+
+        int result = JOptionPane.showConfirmDialog(null, myPanel,
+                "Beam setup", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int id = idField.getItemAt(idField.getSelectedIndex());
+                int length = Integer.parseInt(lengthField.getText());
+                currentShow.addBeam(new Beam(id, length));
+
+                frame.getContentPane().removeAll();
+                frame.add(new ShowComponent(currentShow));
+                frame.getContentPane().validate();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.WARNING_MESSAGE);
+            }
+        }
     }
 
     private static JMenuBar menuBar(Show s) {
@@ -43,15 +81,28 @@ public class ShowTester {
         file.add(quit);
 
         JMenuItem saveShow = new JMenuItem("Save Show");
-        saveShow.addActionListener((ActionEvent event) -> {saveShow(s);});
+        saveShow.addActionListener((ActionEvent event) -> {saveShow();});
         file.add(saveShow);
 
         JMenuItem loadShow = new JMenuItem("Load Show");
         loadShow.addActionListener((ActionEvent event) -> {
             Show newShow = loadShow();
-            frame.getContentPane().removeAll();
-            frame.add(new ShowComponent(newShow));
-            frame.getContentPane().validate();
+            if (currentShow == null) {
+                frame.setVisible(false);
+                setFrame(newShow);
+            } else {
+                switch(JOptionPane.showConfirmDialog(null, "Save current show first?")) {
+                    case JOptionPane.YES_OPTION:
+                        saveShow();
+                        frame.setVisible(false);
+                        setFrame(newShow);
+                        break;
+                    case JOptionPane.NO_OPTION:
+                        frame.setVisible(false);
+                        setFrame(newShow);
+                        break;
+                }
+            }
         });
         file.add(loadShow);
 
@@ -84,7 +135,7 @@ public class ShowTester {
         return s;
     }
 
-    private static void saveShow(Show s) {
+    private static void saveShow() {
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new File("shows"));
         javax.swing.filechooser.FileFilter filter = new FileNameExtensionFilter("Show File (.ser)","ser");
@@ -99,7 +150,7 @@ public class ShowTester {
                 } else {
                     file = new File(chooser.getCurrentDirectory() + "/" + chooser.getSelectedFile().getName() + ".ser");
                 }
-                serialize(s, file);
+                serialize(currentShow, file);
                 JOptionPane.showMessageDialog(null, "Show saved!");
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -108,6 +159,16 @@ public class ShowTester {
     }
 
     private static Show getShow() {
+        JFrame showFrame = new JFrame();
+        showFrame.setSize(1000, 500);
+        showFrame.setTitle("Edit Show");
+        showFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+
+
+        showFrame.setVisible(true);
+
+        /*
         Show s = new Show();
         Beam e1 = new Beam(2, 100);
         e1.add(new Dimmer(1, 10));
@@ -120,9 +181,9 @@ public class ShowTester {
         e2.add(new Instrument(50, "B"));
 
         s.addBeam(e1);
-        s.addBeam(e2);
+        s.addBeam(e2);*/
 
-        return s;
+        return null;
     }
 
     private static void serialize(Show s, File file) {
@@ -146,11 +207,12 @@ public class ShowTester {
             s = (Show) in.readObject();
             in.close();
             fileIn.close();
-        } catch (IOException i) {
-            i.printStackTrace();
-        } catch (ClassNotFoundException c) {
-            System.out.println("Show class not found");
-            c.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return s;
     }

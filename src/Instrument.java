@@ -31,13 +31,13 @@ public class Instrument implements Comparable<Instrument>, Serializable {
 
     public void paintComponent(Graphics graphics, int x, int y, int width, int height) {
         if (graphics instanceof Graphics2D) {
-            Image img = null;
             try {
-                img = ImageIO.read(new File(IMG_LOC));
+                Image img = ImageIO.read(new File(IMG_LOC));
+                Graphics2D g2 = (Graphics2D) graphics;
+                g2.drawImage(img, x, y, 30, 30, null);
             } catch (IOException e) {
+                graphics.drawString(name, x, y);
             }
-            Graphics2D g2 = (Graphics2D) graphics;
-            g2.drawImage(img, x, y, 30, 30, null);
         }
     }
 

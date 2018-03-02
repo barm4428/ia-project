@@ -17,6 +17,10 @@ public class Show implements Serializable {
         beams.add(b);
     }
 
+    public ArrayList<Beam> getBeams() {
+        return beams;
+    }
+
     public void assignDimmers() {
         for (Beam beam:beams) {
             beam.assignDimmers();
