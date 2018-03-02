@@ -3,7 +3,7 @@ import java.awt.*;
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Dimmer implements Comparable<Dimmer>, Paintable {
+public class Dimmer implements Comparable<Dimmer> {
 
     private int number;
     private double beamPos;
@@ -20,16 +20,24 @@ public class Dimmer implements Comparable<Dimmer>, Paintable {
 
     @Override
     public String toString() {
-        return number + "";
+        return "Dimmer(number=" + number + ",beamPos=" + beamPos + ")";
     }
 
     public double getBeamPos() {
         return beamPos;
     }
 
-    @Override
     public void paintComponent(Graphics graphics, int x, int y, int width, int height) {
-        graphics.drawString(toString(), x, y);
+        graphics.drawString("" + number, x, y);
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Dimmer) {
+            Dimmer d = (Dimmer) obj;
+            return number == d.number;
+        } else {
+            return false;
+        }
     }
 }

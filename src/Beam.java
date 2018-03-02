@@ -4,7 +4,7 @@ import java.util.ArrayList;
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Beam implements Paintable {
+public class Beam {
 
     private int id;
     private int length;
@@ -34,7 +34,6 @@ public class Beam implements Paintable {
         this.id = id;
     }
 
-    @Override
     public void paintComponent(Graphics graphics, int x, int y, int width, int height) {
         graphics.drawLine(x+5, y, width-25, y);
         for (Dimmer d:dimmers) {
@@ -45,5 +44,17 @@ public class Beam implements Paintable {
             int pos = (int) Math.ceil(x + (i.getBeamPos()/length*width));
             i.paintComponent(graphics, pos, y+2, 20, 20);
         }
+    }
+
+    @Override
+    public String toString() {
+        String output = "Beam(id=" + id + ",length=" + length;
+        for (Dimmer d:dimmers) {
+            output += "," + d;
+        }
+        for (Instrument i: instruments) {
+            output += "," + i;
+        }
+        return output + ")";
     }
 }

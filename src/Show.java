@@ -29,4 +29,16 @@ public class Show {
             y+=100;
         }
     }
+
+    @Override
+    public String toString() {
+        String output = "";
+        for (int i=0; i<beams.size(); i++) {
+            output += beams.get(i);
+            if (i<beams.size()-1) {
+                output += ",";
+            }
+        }
+        return output;
+    }
 }

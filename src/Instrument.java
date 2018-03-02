@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Instrument implements Comparable<Instrument>, Paintable {
+public class Instrument implements Comparable<Instrument> {
 
     private double beamPos;
     private String name;
@@ -26,7 +26,7 @@ public class Instrument implements Comparable<Instrument>, Paintable {
 
     @Override
     public String toString() {
-        return name;
+        return "Instrument(name=" + name + ",beamPos=" + beamPos + ")";
     }
 
     @Override
@@ -34,7 +34,6 @@ public class Instrument implements Comparable<Instrument>, Paintable {
         return (int) Math.ceil(beamPos - o.beamPos);
     }
 
-    @Override
     public void paintComponent(Graphics graphics, int x, int y, int width, int height) {
         if (graphics instanceof Graphics2D) {
             Graphics2D g2 = (Graphics2D) graphics;
