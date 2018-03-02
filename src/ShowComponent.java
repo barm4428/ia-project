@@ -6,8 +6,14 @@ import java.awt.*;
  */
 public class ShowComponent extends JComponent {
 
+    private Show show;
+
+    public ShowComponent(Show show) {
+        this.show = show;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        show.paintComponent(g);
     }
 }

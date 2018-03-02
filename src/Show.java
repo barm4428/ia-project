@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -18,6 +19,14 @@ public class Show {
     public void assignDimmers() {
         for (Beam beam:beams) {
             beam.assignDimmers();
+        }
+    }
+
+    public void paintComponent(Graphics graphics) {
+        int y = 20;
+        for (Beam beam:beams) {
+            beam.paintComponent(graphics, 0, y, 1000, 500);
+            y+=100;
         }
     }
 }
