@@ -1,10 +1,11 @@
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Show {
+public class Show implements Serializable {
 
     private ArrayList<Beam> beams;
 

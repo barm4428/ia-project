@@ -8,17 +8,19 @@ public class ShowTester {
 
     public static void main(String[] args) {
         Show s = getShow();
-        saveShow("venues/output", s);
+        saveShow(s, "venue");
+        Show s2 = readShow("venue");
+        setFrame(s2);
     }
 
-    private static void setFrame() {
+    private static void setFrame(Show s) {
         JFrame frame = new JFrame();
         frame.setSize(1000, 500);
         frame.setTitle("Hello");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frame.setJMenuBar(menuBar());
-        frame.add(new ShowComponent(getShow()));
+        frame.add(new ShowComponent(s));
 
         frame.setVisible(true);
     }
@@ -26,10 +28,14 @@ public class ShowTester {
     private static JMenuBar menuBar() {
         JMenu file = new JMenu("File");
         file.add(new JMenuItem("Quit"));
-        file.add(new JMenuItem("B"));
+        file.add(new JMenuItem("Save Show"));
+        file.add(new JMenuItem("Save Venue"));
+        file.add(new JMenuItem("Load Show"));
+        file.add(new JMenuItem("Load Venue"));
 
         JMenu beam = new JMenu("Beam");
         beam.add(new JMenuItem("Add beam"));
+        beam.add(new JMenuItem("Assign dimmers"));
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(file);
@@ -55,14 +61,34 @@ public class ShowTester {
         return s;
     }
 
-    private static void saveShow(String name, Show s) {
+    private static void saveShow(Show s, String fileName) {
         try {
-            PrintWriter writer = new PrintWriter(name + ".txt");
-            writer.print(s.toString());
-            writer.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            FileOutputStream fileOut =
+                    new FileOutputStream("venues/"+ fileName + ".ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(s);
+            out.close();
+            fileOut.close();
+        } catch (IOException i) {
+            i.printStackTrace();
         }
+    }
+
+    private static Show readShow(String fileName) {
+        Show s = null;
+        try {
+            FileInputStream fileIn = new FileInputStream("venues/" + fileName + ".ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            s = (Show) in.readObject();
+            in.close();
+            fileIn.close();
+        } catch (IOException i) {
+            i.printStackTrace();
+        } catch (ClassNotFoundException c) {
+            System.out.println("Show class not found");
+            c.printStackTrace();
+        }
+        return s;
     }
 
 }

@@ -1,9 +1,10 @@
 import java.awt.*;
+import java.io.Serializable;
 
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Dimmer implements Comparable<Dimmer> {
+public class Dimmer implements Comparable<Dimmer>, Serializable {
 
     private int number;
     private double beamPos;

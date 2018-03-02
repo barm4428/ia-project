@@ -1,10 +1,11 @@
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Beam {
+public class Beam implements Serializable {
 
     private int id;
     private int length;
