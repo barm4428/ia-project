@@ -9,6 +9,8 @@ import java.io.*;
  */
 public class ShowTester {
 
+    private static JFrame frame;
+
     public static void main(String[] args) {
         /*String test1= JOptionPane.showInputDialog("Please input mark for test 1: ");
         System.out.println(test1);*/
@@ -22,7 +24,7 @@ public class ShowTester {
     }
 
     private static void setFrame(Show s) {
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setSize(1000, 500);
         frame.setTitle("Hello");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,17 +46,14 @@ public class ShowTester {
         saveShow.addActionListener((ActionEvent event) -> {saveShow(s);});
         file.add(saveShow);
 
-        JMenuItem saveVenue = new JMenuItem("Save Venue");
-        saveVenue.addActionListener((ActionEvent event) -> {saveVenue(s);});
-        file.add(saveVenue);
-
         JMenuItem loadShow = new JMenuItem("Load Show");
-        loadShow.addActionListener((ActionEvent event) -> {loadShow();});
+        loadShow.addActionListener((ActionEvent event) -> {
+            Show newShow = loadShow();
+            frame.getContentPane().removeAll();
+            frame.add(new ShowComponent(newShow));
+            frame.getContentPane().validate();
+        });
         file.add(loadShow);
-
-        JMenuItem loadVenue = new JMenuItem("Load Venue");
-        loadVenue.addActionListener((ActionEvent event) -> {loadVenue();});
-        file.add(new JMenuItem("Load Venue"));
 
         JMenu beam = new JMenu("Beam");
         beam.add(new JMenuItem("Add beam"));
@@ -67,15 +66,22 @@ public class ShowTester {
         return menuBar;
     }
 
-    private static void loadVenue() {
-
-    }
-
-    private static void loadShow() {
-
-    }
-
-    private static void saveVenue(Show s) {
+    private static Show loadShow() {
+        Show s = null;
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new File("shows"));
+        javax.swing.filechooser.FileFilter filter = new FileNameExtensionFilter("Show File (.ser)","ser");
+        chooser.setFileFilter(filter);
+        int retrieval = chooser.showOpenDialog(null);
+        if (retrieval == JFileChooser.APPROVE_OPTION) {
+            try {
+                File file = chooser.getSelectedFile();
+                s = unserialize(file);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return s;
     }
 
     private static void saveShow(Show s) {
@@ -94,34 +100,11 @@ public class ShowTester {
                     file = new File(chooser.getCurrentDirectory() + "/" + chooser.getSelectedFile().getName() + ".ser");
                 }
                 serialize(s, file);
+                JOptionPane.showMessageDialog(null, "Show saved!");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-        /*JFrame inputBox = new JFrame();
-        inputBox.setSize(300, 150);
-        inputBox.setTitle("Save Show");
-        inputBox.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JPanel panel = new JPanel();
-
-        JPanel line1 = new JPanel();
-        JLabel label = new JLabel ("Enter file name: ");
-        line1.add(label);
-        JTextField input = new JTextField("show", 10);
-        line1.add(input);
-        line1.add(new JLabel(".ser"));
-        panel.add(line1);
-
-        JPanel line2 = new JPanel();
-        JButton save = new JButton("Save");
-        line2.add(save);
-        JButton cancel = new JButton("Cancel");
-        line2.add(cancel);
-        panel.add(line2);
-
-        inputBox.add(panel);
-        inputBox.setVisible(true);*/
     }
 
     private static Show getShow() {
@@ -130,10 +113,11 @@ public class ShowTester {
         e1.add(new Dimmer(1, 10));
         e1.add(new Dimmer(2, 50));
         e1.add(new Instrument(10, "A"));
+        e1.add(new Instrument(30, "C"));
         Beam e2 = new Beam(2, 100);
         e2.add(new Dimmer(3, 10));
         e2.add(new Dimmer(4, 50));
-        e2.add(new Instrument(10, "B"));
+        e2.add(new Instrument(50, "B"));
 
         s.addBeam(e1);
         s.addBeam(e2);
@@ -154,10 +138,10 @@ public class ShowTester {
         }
     }
 
-    private static Show unserialize(String fileName) {
+    private static Show unserialize(File file) {
         Show s = null;
         try {
-            FileInputStream fileIn = new FileInputStream("shows/" + fileName + ".ser");
+            FileInputStream fileIn = new FileInputStream(file);
             ObjectInputStream in = new ObjectInputStream(fileIn);
             s = (Show) in.readObject();
             in.close();
