@@ -59,4 +59,16 @@ public class Beam implements Serializable {
         }
         return output + ")";
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public ArrayList<Dimmer> getDimmers() {
+        return dimmers;
+    }
+
+    public ArrayList<Instrument> getInstruments() {
+        return instruments;
+    }
 }

@@ -14,6 +14,11 @@ public class Show implements Serializable {
     }
 
     public void addBeam(Beam b) {
+        for (Beam beam:beams) {
+            if (beam.getId()>=b.getId()) {
+                beam.setId(beam.getId()+1);
+            }
+        }
         beams.add(b);
     }
 

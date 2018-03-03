@@ -1,7 +1,10 @@
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 
 /**
  * Created by Bryson Armstrong (HL2) on 3/1/2018.
@@ -27,7 +30,11 @@ public class ShowTester {
         } else {
             JPanel panel = new JPanel();
             JButton loadFile = new JButton("Load show from File");
-            loadFile.addActionListener((ActionEvent event) -> {loadShow();});
+            loadFile.addActionListener((ActionEvent event) -> {
+                Show loadedShow = loadShow();
+                frame.setVisible(false);
+                setFrame(loadedShow);
+            });
             panel.add(loadFile);
             JButton addBeamButton = new JButton("Create new show");
             addBeamButton.addActionListener((ActionEvent event) -> {addBeam();});
@@ -46,12 +53,12 @@ public class ShowTester {
             idField.addItem(i+1);
         }
 
-        JTextField lengthField = new JTextField(5);
+        JTextField lengthField = new JTextField("100", 5);
 
         JPanel myPanel = new JPanel();
         myPanel.add(new JLabel("ID#:"));
         myPanel.add(idField);
-        myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+        myPanel.add(Box.createHorizontalStrut(15));
         myPanel.add(new JLabel("Length:"));
         myPanel.add(lengthField);
         myPanel.add(new JLabel("ft"));
@@ -62,13 +69,142 @@ public class ShowTester {
             try {
                 int id = idField.getItemAt(idField.getSelectedIndex());
                 int length = Integer.parseInt(lengthField.getText());
-                currentShow.addBeam(new Beam(id, length));
+                Beam beam = new Beam(id, length);
+                editBeam(beam);
+                currentShow.addBeam(beam);
 
                 frame.getContentPane().removeAll();
                 frame.add(new ShowComponent(currentShow));
                 frame.getContentPane().validate();
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Error", "Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error", "Error. Length must be an integer", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
+
+    private static void editBeam() {
+        //TODO test and debug
+        JComboBox<Integer> idField = new JComboBox<>();
+        for (Beam beam:currentShow.getBeams()) {
+            idField.addItem(beam.getId());
+        }
+
+        JPanel myPanel = new JPanel();
+        myPanel.add(new JLabel("Select Beam ID: "));
+        myPanel.add(idField);
+
+        int result = JOptionPane.showConfirmDialog(null, myPanel,
+                "Beam setup", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            int id = idField.getItemAt(idField.getSelectedIndex());
+            for (Beam beam:currentShow.getBeams()) {
+                if (beam.getId()==id) {
+                    editBeam(beam);
+                }
+            }
+        }
+    }
+
+    private static void editBeam(Beam beam) {
+        //TODO add remove functionality, add ActionListener
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.ipadx = 20;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        panel.add(new JLabel("Dimmers"), c);
+
+        c.gridx = 2;
+        panel.add(new JLabel("Instruments"), c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        panel.add(new JLabel("Number"), c);
+
+        c.gridx = 1;
+        panel.add(new JLabel("Position"), c);
+
+        c.gridx = 2;
+        panel.add(new JLabel("Name"), c);
+
+        c.gridx = 3;
+        panel.add(new JLabel("Position"), c);
+
+        int dy = c.gridy+1;
+        int iy = c.gridy+1;
+
+        for (Dimmer d:beam.getDimmers()) {
+            JLabel numField = new JLabel(d.getNumber()+"");
+            JLabel posField = new JLabel(d.getBeamPos()+"");
+            c.gridx = 0;
+            c.gridy = dy;
+            panel.add(numField, c);
+            c.gridx = 1;
+            panel.add(posField, c);
+            dy++;
+        }
+
+        for (Instrument i:beam.getInstruments()) {
+            JLabel nameField = new JLabel(i.getName());
+            JLabel posField = new JLabel(i.getBeamPos()+"");
+            c.gridx = 2;
+            c.gridy = iy;
+            panel.add(nameField, c);
+            c.gridx = 3;
+            panel.add(posField, c);
+            dy++;
+        }
+
+        String[] options = {"Add Dimmer", "Add Instrument", "Done"};
+        boolean running = true;
+        while (running) {
+            int result = JOptionPane.showOptionDialog(null,
+                    panel,
+                    "A",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    options,
+                    null);
+            if (result == 0) {
+                String[] input = TwoPromptDialog.newBox("Dimmer number: ", "Beam Position: ", "New Dimmer");
+                try {
+                    int number = Integer.parseInt(input[0]);
+                    double position = Double.parseDouble(input[1]);
+                    Dimmer dim = new Dimmer(number, position);
+                    beam.add(dim);
+
+                    c.gridy = dy;
+                    c.gridx = 0;
+                    panel.add(new JLabel(input[0]), c);
+                    c.gridx = 1;
+                    panel.add(new JLabel(input[1]), c);
+                    dy++;
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Error", "Error. Incompatible types", JOptionPane.WARNING_MESSAGE);
+                }
+            } else if (result == 1) {
+                String[] input = TwoPromptDialog.newBox("Instrument Name: ", "Beam Position: ", "New Instrument");
+                try {
+                    String name = input[0];
+                    double position = Double.parseDouble(input[1]);
+                    Instrument instrument = new Instrument(position, name);
+                    beam.add(instrument);
+
+                    c.gridy = iy;
+                    c.gridx = 2;
+                    panel.add(new JLabel(input[0]), c);
+                    c.gridx = 3;
+                    panel.add(new JLabel(input[1]), c);
+                    iy++;
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Error", "Error. Incompatible types", JOptionPane.WARNING_MESSAGE);
+                }
+            } else if (result == 2 || result==JOptionPane.CLOSED_OPTION) {
+                running = false;
             }
         }
     }
@@ -107,8 +243,14 @@ public class ShowTester {
         file.add(loadShow);
 
         JMenu beam = new JMenu("Beam");
-        beam.add(new JMenuItem("Add beam"));
-        beam.add(new JMenuItem("Assign dimmers"));
+
+        JMenuItem addBeam = new JMenuItem("Add beam");
+        addBeam.addActionListener((ActionEvent Event) -> {addBeam();});
+        beam.add(addBeam);
+
+        JMenuItem editBeam = new JMenuItem("Edit beam");
+        editBeam.addActionListener((ActionEvent event) -> {editBeam();});
+        beam.add(editBeam);
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(file);
@@ -156,34 +298,6 @@ public class ShowTester {
                 ex.printStackTrace();
             }
         }
-    }
-
-    private static Show getShow() {
-        JFrame showFrame = new JFrame();
-        showFrame.setSize(1000, 500);
-        showFrame.setTitle("Edit Show");
-        showFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-
-
-        showFrame.setVisible(true);
-
-        /*
-        Show s = new Show();
-        Beam e1 = new Beam(2, 100);
-        e1.add(new Dimmer(1, 10));
-        e1.add(new Dimmer(2, 50));
-        e1.add(new Instrument(10, "A"));
-        e1.add(new Instrument(30, "C"));
-        Beam e2 = new Beam(2, 100);
-        e2.add(new Dimmer(3, 10));
-        e2.add(new Dimmer(4, 50));
-        e2.add(new Instrument(50, "B"));
-
-        s.addBeam(e1);
-        s.addBeam(e2);*/
-
-        return null;
     }
 
     private static void serialize(Show s, File file) {

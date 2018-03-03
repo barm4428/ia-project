@@ -41,4 +41,8 @@ public class Dimmer implements Comparable<Dimmer>, Serializable {
             return false;
         }
     }
+
+    public int getNumber() {
+        return number;
+    }
 }

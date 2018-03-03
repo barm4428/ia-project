@@ -44,4 +44,8 @@ public class Instrument implements Comparable<Instrument>, Serializable {
     public double getBeamPos() {
         return beamPos;
     }
+
+    public String getName() {
+        return name;
+    }
 }
