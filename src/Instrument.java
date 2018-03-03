@@ -7,20 +7,19 @@ import java.io.Serializable;
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Instrument implements Comparable<Instrument>, Serializable {
+public class Instrument extends BeamObj implements Comparable<Instrument>, Serializable {
 
-    private double beamPos;
     private String name;
     private static final String IMG_LOC = "resources/etc.jpg";
 
     public Instrument(double beamPos, String name) {
-        this.beamPos = beamPos;
+        super(beamPos);
         this.name = name;
     }
 
     @Override
     public String toString() {
-        return "Instrument(name=" + name + ",beamPos=" + beamPos + ")";
+        return "Instrument(name=" + name + ",beamPos=" + getBeamPos() + ")";
     }
 
     @Override

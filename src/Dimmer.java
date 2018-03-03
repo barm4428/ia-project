@@ -4,14 +4,13 @@ import java.io.Serializable;
 /**
  * Created by Bryson Armstrong (HL2) on 2/28/2018.
  */
-public class Dimmer implements Comparable<Dimmer>, Serializable {
+public class Dimmer extends BeamObj implements Comparable<Dimmer>, Serializable {
 
     private int number;
-    private double beamPos;
 
     public Dimmer(int number, double beamPos) {
+        super(beamPos);
         this.number = number;
-        this.beamPos = beamPos;
     }
 
     @Override
