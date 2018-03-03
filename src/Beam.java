@@ -71,4 +71,28 @@ public class Beam implements Serializable {
     public ArrayList<Instrument> getInstruments() {
         return instruments;
     }
+
+    public boolean removeDimmer(int number) {
+        boolean found = false;
+        for (int i=0; i<dimmers.size(); i++) {
+            if (dimmers.get(i).getNumber() == number) {
+                dimmers.remove(i);
+                i--;
+                found = true;
+            }
+        }
+        return found;
+    }
+
+    public boolean removeInstrument(String name) {
+        boolean found = false;
+        for (int i=0; i<instruments.size(); i++) {
+            if (instruments.get(i).getName().equals(name)) {
+                instruments.remove(i);
+                i--;
+                found = true;
+            }
+        }
+        return found;
+    }
 }

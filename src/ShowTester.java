@@ -3,8 +3,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
-import java.text.NumberFormat;
-import java.util.ArrayList;
 
 /**
  * Created by Bryson Armstrong (HL2) on 3/1/2018.
@@ -24,7 +22,7 @@ public class ShowTester {
         frame.setTitle("Hello");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        frame.setJMenuBar(menuBar(s));
+        frame.setJMenuBar(menuBar());
         if (s.getBeams().size()>0) {
             frame.add(new ShowComponent(s));
         } else {
@@ -33,7 +31,11 @@ public class ShowTester {
             loadFile.addActionListener((ActionEvent event) -> {
                 Show loadedShow = loadShow();
                 frame.setVisible(false);
-                setFrame(loadedShow);
+                if (loadedShow!=null) {
+                    setFrame(loadedShow);
+                } else {
+                    setFrame(s);
+                }
             });
             panel.add(loadFile);
             JButton addBeamButton = new JButton("Create new show");
@@ -82,8 +84,7 @@ public class ShowTester {
         }
     }
 
-    private static void editBeam() {
-        //TODO test and debug
+    private static Beam getBeamInput() {
         JComboBox<Integer> idField = new JComboBox<>();
         for (Beam beam:currentShow.getBeams()) {
             idField.addItem(beam.getId());
@@ -93,16 +94,19 @@ public class ShowTester {
         myPanel.add(new JLabel("Select Beam ID: "));
         myPanel.add(idField);
 
+        Beam found = null;
+
         int result = JOptionPane.showConfirmDialog(null, myPanel,
                 "Beam setup", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             int id = idField.getItemAt(idField.getSelectedIndex());
             for (Beam beam:currentShow.getBeams()) {
                 if (beam.getId()==id) {
-                    editBeam(beam);
+                    found = beam;
                 }
             }
         }
+        return found;
     }
 
     private static void editBeam(Beam beam) {
@@ -155,7 +159,7 @@ public class ShowTester {
             panel.add(nameField, c);
             c.gridx = 3;
             panel.add(posField, c);
-            dy++;
+            iy++;
         }
 
         String[] options = {"Add Dimmer", "Add Instrument", "Done"};
@@ -163,7 +167,7 @@ public class ShowTester {
         while (running) {
             int result = JOptionPane.showOptionDialog(null,
                     panel,
-                    "A",
+                    "Edit Beam" + beam.getId(),
                     JOptionPane.DEFAULT_OPTION,
                     JOptionPane.PLAIN_MESSAGE,
                     null,
@@ -185,6 +189,8 @@ public class ShowTester {
                     dy++;
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Error", "Error. Incompatible types", JOptionPane.WARNING_MESSAGE);
+                } catch (Exception e) {
+
                 }
             } else if (result == 1) {
                 String[] input = TwoPromptDialog.newBox("Instrument Name: ", "Beam Position: ", "New Instrument");
@@ -202,6 +208,8 @@ public class ShowTester {
                     iy++;
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Error", "Error. Incompatible types", JOptionPane.WARNING_MESSAGE);
+                } catch (Exception e) {
+
                 }
             } else if (result == 2 || result==JOptionPane.CLOSED_OPTION) {
                 running = false;
@@ -209,7 +217,93 @@ public class ShowTester {
         }
     }
 
-    private static JMenuBar menuBar(Show s) {
+    private static void remove() {
+        String[] options = {"Remove Dimmer", "Remove Instrument", "Done"};
+        boolean running = true;
+        while (running) {
+            Beam beam = getBeamInput();
+            JPanel panel = new JPanel(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.ipadx = 20;
+
+            c.gridx = 0;
+            c.gridy = 0;
+            panel.add(new JLabel("Dimmers"), c);
+
+            c.gridx = 2;
+            panel.add(new JLabel("Instruments"), c);
+
+            c.gridx = 0;
+            c.gridy = 1;
+            panel.add(new JLabel("Number"), c);
+
+            c.gridx = 1;
+            panel.add(new JLabel("Position"), c);
+
+            c.gridx = 2;
+            panel.add(new JLabel("Name"), c);
+
+            c.gridx = 3;
+            panel.add(new JLabel("Position"), c);
+
+            int dy = c.gridy+1;
+            int iy = c.gridy+1;
+
+            for (Dimmer d:beam.getDimmers()) {
+                JLabel numField = new JLabel(d.getNumber()+"");
+                JLabel posField = new JLabel(d.getBeamPos()+"");
+                c.gridx = 0;
+                c.gridy = dy;
+                panel.add(numField, c);
+                c.gridx = 1;
+                panel.add(posField, c);
+                dy++;
+            }
+
+            for (Instrument i:beam.getInstruments()) {
+                JLabel nameField = new JLabel(i.getName());
+                JLabel posField = new JLabel(i.getBeamPos()+"");
+                c.gridx = 2;
+                c.gridy = iy;
+                panel.add(nameField, c);
+                c.gridx = 3;
+                panel.add(posField, c);
+                iy++;
+            }
+
+            int result = JOptionPane.showOptionDialog(null,
+                    panel,
+                    "A",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    options,
+                    null);
+            if (result == 0) {
+                String input = JOptionPane.showInputDialog("Enter Dimmer number to remove: ");
+                try {
+                    int number = Integer.parseInt(input);
+                    if (beam.removeDimmer(number)) {
+                        JOptionPane.showMessageDialog(null, "Dimmer removed!");
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Error", "Error. Incompatible types", JOptionPane.WARNING_MESSAGE);
+                }
+            } else if (result == 1) {
+                String input = JOptionPane.showInputDialog("Enter Instrument name to remove: ");
+                if (beam.removeInstrument(input)) {
+                    JOptionPane.showMessageDialog(null, "Instrument removed!");
+                }
+            } else if (result == 2 || result==JOptionPane.CLOSED_OPTION) {
+                running = false;
+            }
+        }
+        frame.getContentPane().validate();
+    }
+
+    private static JMenuBar menuBar() {
         JMenu file = new JMenu("File");
 
         JMenuItem quit = new JMenuItem("Quit");
@@ -249,8 +343,12 @@ public class ShowTester {
         beam.add(addBeam);
 
         JMenuItem editBeam = new JMenuItem("Edit beam");
-        editBeam.addActionListener((ActionEvent event) -> {editBeam();});
+        editBeam.addActionListener((ActionEvent event) -> {editBeam(getBeamInput());});
         beam.add(editBeam);
+
+        JMenuItem remove = new JMenuItem("Remove Dimmers/Instruments");
+        remove.addActionListener((ActionEvent event) -> {remove();});
+        beam.add(remove);
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(file);
