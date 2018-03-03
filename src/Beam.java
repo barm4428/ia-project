@@ -19,10 +19,6 @@ public class Beam implements Serializable {
         instruments = new ArrayList<>();
     }
 
-    public void assignDimmers() {
-        //Does something
-    }
-
     public void add(Dimmer d) {
         dimmers.add(d);
     }

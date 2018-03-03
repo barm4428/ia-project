@@ -26,12 +26,6 @@ public class Show implements Serializable {
         return beams;
     }
 
-    public void assignDimmers() {
-        for (Beam beam:beams) {
-            beam.assignDimmers();
-        }
-    }
-
     public void paintComponent(Graphics graphics) {
         int y = 20;
         for (Beam beam:beams) {

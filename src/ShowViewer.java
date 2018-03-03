@@ -7,7 +7,8 @@ import java.io.*;
 /**
  * Created by Bryson Armstrong (HL2) on 3/1/2018.
  */
-public class ShowTester {
+public class ShowViewer {
+    //TODO remove Beam
 
     private static JFrame frame;
     private static Show currentShow;
