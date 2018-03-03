@@ -11,7 +11,6 @@ public class Instrument implements Comparable<Instrument>, Serializable {
 
     private double beamPos;
     private String name;
-    public static final int CHORD_LENGTH = 2;
     private static final String IMG_LOC = "resources/etc.jpg";
 
     public Instrument(double beamPos, String name) {
