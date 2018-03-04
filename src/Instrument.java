@@ -2,31 +2,44 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
- * Created by Bryson Armstrong (HL2) on 2/28/2018.
+ * Models a lighting instrument hung on a beam.
+ * The Instrument has a name and beamPos (gotten from parent BeamObj class.
+ * The Instrument is graphically displayed as an Image found in resources/etc.jpg.
  */
-public class Instrument extends BeamObj implements Comparable<Instrument>, Serializable {
+public class Instrument extends BeamObj  {
 
     private String name;
     private static final String IMG_LOC = "resources/etc.jpg";
 
+    /**
+     * Creates a new Instrument.
+     * @param beamPos The Instrument's absolute position on the beam.
+     * @param name All Instruments of the same name will be considered equal.
+     */
     public Instrument(double beamPos, String name) {
         super(beamPos);
         this.name = name;
     }
 
+    /**
+     * Prints the Instrument as a String.
+     * @return A String of the form "Instrument(name=[name],beamPos=[beamPos])
+     */
     @Override
     public String toString() {
         return "Instrument(name=" + name + ",beamPos=" + getBeamPos() + ")";
     }
 
-    @Override
-    public int compareTo(Instrument o) {
-        return (int) Math.ceil(beamPos - o.beamPos);
-    }
-
+    /**
+     * Paints the instrument as an Image on graphics.
+     * @param graphics The graphics object to paint the image on.
+     * @param x The x-coordinate of the top-left corner of the image.
+     * @param y The y-coordinate of the top-left corner of the image.
+     * @param width The width of the Image's container.
+     * @param height The height of the Image's container.
+     */
     public void paintComponent(Graphics graphics, int x, int y, int width, int height) {
         if (graphics instanceof Graphics2D) {
             try {
@@ -39,10 +52,18 @@ public class Instrument extends BeamObj implements Comparable<Instrument>, Seria
         }
     }
 
+    /**
+     * Returns the Instrument's position of the beam.
+     * @return beamPos
+     */
     public double getBeamPos() {
         return beamPos;
     }
 
+    /**
+     * Returns the Instrument's name.
+     * @return name
+     */
     public String getName() {
         return name;
     }

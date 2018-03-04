@@ -5,18 +5,24 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 
 /**
- * Created by Bryson Armstrong (HL2) on 3/1/2018.
+ * Viewer class for a Show. Also contains the main menu and all navigation functions.
  */
 public class ShowViewer {
-    //TODO remove Beam
 
     private static JFrame frame;
     private static Show currentShow;
 
+    /**
+     * Entry point of program
+     */
     public static void main(String[] args) {
         setFrame(new Show());
     }
 
+    /**
+     * Displays a new JFrame with a show drawn inside.
+     * @param s The show to display.
+     */
     private static void setFrame(Show s) {
         frame = new JFrame();
         frame.setSize(1000, 500);
@@ -50,6 +56,9 @@ public class ShowViewer {
         frame.setVisible(true);
     }
 
+    /**
+     * Called by the main menu to run functionality to add a beam to the current show.
+     */
     private static void addBeam() {
         JComboBox<Integer> idField = new JComboBox<>();
         for (int i=0; i<=currentShow.getBeams().size(); i++) {
@@ -85,6 +94,10 @@ public class ShowViewer {
         }
     }
 
+    /**
+     * Calls a dialog box with options for the user to select a beam.
+     * @return The Beam that the user selects.
+     */
     private static Beam getBeamInput() {
         JComboBox<Integer> idField = new JComboBox<>();
         for (Beam beam:currentShow.getBeams()) {
@@ -110,8 +123,11 @@ public class ShowViewer {
         return found;
     }
 
+    /**
+     * GUI allowing a user to edit a beam.
+     * @param beam The beam to be edited.
+     */
     private static void editBeam(Beam beam) {
-        //TODO add remove functionality, add ActionListener
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
@@ -218,6 +234,9 @@ public class ShowViewer {
         }
     }
 
+    /**
+     * A method to create GUI for user to remove dimmers and instruments from a Beam.
+     */
     private static void remove() {
         String[] options = {"Remove Dimmer", "Remove Instrument", "Done"};
         boolean running = true;
@@ -304,6 +323,10 @@ public class ShowViewer {
         frame.getContentPane().validate();
     }
 
+    /**
+     * Generates the JMenuBar for the JFrame.
+     * @return The JMenuBar to be added to the JFrame.
+     */
     private static JMenuBar menuBar() {
         JMenu file = new JMenu("File");
 
@@ -358,6 +381,10 @@ public class ShowViewer {
         return menuBar;
     }
 
+    /**
+     * GUI allowing user to choose a show to load from file.
+     * @return The Show loaded by the user.
+     */
     private static Show loadShow() {
         Show s = null;
         JFileChooser chooser = new JFileChooser();
@@ -376,6 +403,9 @@ public class ShowViewer {
         return s;
     }
 
+    /**
+     * GUI allowing user to save the current show.
+     */
     private static void saveShow() {
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new File("shows"));
@@ -399,6 +429,11 @@ public class ShowViewer {
         }
     }
 
+    /**
+     * Data processing allowing program to serialize a show to a file. Used in saving the current show.
+     * @param s The show to be serialized.
+     * @param file The destination file.
+     */
     private static void serialize(Show s, File file) {
         try {
             FileOutputStream fileOut =
@@ -412,6 +447,11 @@ public class ShowViewer {
         }
     }
 
+    /**
+     * Data processing allowing program to read a show from a file.
+     * @param file The file containing a serialized Show object.
+     * @return The Show contained in the file.
+     */
     private static Show unserialize(File file) {
         Show s = null;
         try {

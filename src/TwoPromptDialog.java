@@ -1,10 +1,17 @@
 import javax.swing.*;
 
 /**
- * Created by Bryson Armstrong (HL2) on 3/2/2018.
+ * Creates a dual textBox dialog box asking for user input, and returns the entered user input.
  */
 public class TwoPromptDialog {
 
+    /**
+     * Creates a new JOptionPanel with the given prompts and title, and returns the user input.
+     * @param m1 The prompt for the first text box.
+     * @param m2 The prompt for the second text box.
+     * @param title The title for the dialog box.
+     * @return A String array containing the two user inputs.
+     */
     public static String[] newBox(String m1, String m2, String title) {
         final int NUM_COLUMNS = 5;
 
